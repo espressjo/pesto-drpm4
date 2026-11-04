@@ -9,6 +9,7 @@ from datetime import date
 from pathlib import Path
 
 from drpm4 import __version__
+from drpm4.archive import archive_night
 from drpm4.nightReport import NightReport
 from drpm4.ommobj import level0_folders, ommobjs, resolve_dir
 from drpm4.pestoAstrometry import AstrometrySolver, run_level1
@@ -45,6 +46,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--skip-existing", action="store_true", help="do not rewrite files already in redux/")
     p.add_argument("--level", type=int, choices=(0, 1), default=1,
                    help="highest reduction level to run: 0 = headers, 1 = headers + astrometry (default)")
+    p.add_argument("--archive", action="store_true",
+                   help="after the other steps: empty Video/ and gzip every FITS file (never done unless asked)")
+    p.add_argument("--archive-only", action="store_true",
+                   help="only archive (empty Video/, gzip every FITS file), no level 0/1 and no report")
+    p.add_argument("--dry-run", action="store_true", help="with --archive/--archive-only: show what would be done")
     p.add_argument("--no-report", action="store_true", help="run level 0 only, no night report")
     p.add_argument("--report-only", action="store_true", help="build the night report only, no level 0")
     p.add_argument("-v", "--verbose", action="store_true", help="debug output")
@@ -72,6 +78,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{o.object:<24}{o.filter:<10}{o.rotation:>9.2f}{o.number_of_file:>7}{len(o.flat):>6}{len(o.dark):>6}  {o.start}-{o.stop}")
         print(f"{objs.nb_objects} observation(s), {objs.observing_time:.2f} h of exposure")
         return 0
+
+    if args.archive_only:
+        return 1 if _archive(night_dir, only, args.dry_run) else 0
 
     config = load_config()
     failures = 0
@@ -102,7 +111,23 @@ def main(argv: list[str] | None = None) -> int:
         report = NightReport(objs, config).build()
         if report is None:
             failures += 1
+    if args.archive:
+        if failures:
+            log.error("not archiving: %d error(s) above. Fix them, then run: drpm4 --archive-only", failures)
+        else:
+            failures += _archive(night_dir, only, args.dry_run)
     return 1 if failures else 0
+
+
+def _archive(night_dir: Path, only: Path | None, dry_run: bool) -> int:
+    """Run the archive step and log what it did. Return the number of failures."""
+    res = archive_night(night_dir, only=only, dry_run=dry_run)
+    verb = "would be" if dry_run else "were"
+    log.info("archive: %d FITS files %s gzipped (%.1f MB -> %s)", res.gzipped, verb, res.bytes_before / 1e6,
+             "?" if dry_run else f"{res.bytes_after / 1e6:.1f} MB")
+    if only is None:
+        log.info("archive: %d file(s) %s removed from Video/ (%.1f MB)", res.video_files, verb, res.video_bytes / 1e6)
+    return len(res.failed)
 
 
 if __name__ == "__main__":

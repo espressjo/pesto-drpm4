@@ -70,3 +70,5 @@ seed "$here/spec.md"                    "$DRPM4_HOME/documentation/spec.md"
 
 echo "Done:"
 ls -ld "$DRPM4_HOME" "${SUBDIRS[@]/#/$DRPM4_HOME/}"
+echo
+echo "Next: ./download_indexes.sh --dry-run   (astrometry.net index files for level 1, see README.md)"
