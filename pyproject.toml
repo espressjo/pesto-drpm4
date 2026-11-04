@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drpm4"
+version = "0.1.0"
+description = "Data reduction pipeline for PESTO (Observatoire du Mont Megantic)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "astropy",
+    "tzdata",
+    "scipy",
+    "photutils>=3.0",
+    "astrometry>=4.3",
+]
+
+[project.scripts]
+drpm4 = "drpm4.cli:main"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["drpm4*"]
+
+[tool.setuptools.package-data]
+"drpm4.resources" = ["*.csv", "*.cfg"]
