@@ -9,7 +9,9 @@ from datetime import date
 from pathlib import Path
 
 from drpm4 import __version__
+from drpm4.nightReport import NightReport
 from drpm4.ommobj import level0_folders, ommobjs, resolve_dir
+from drpm4.pestoAstrometry import AstrometrySolver, run_level1
 from drpm4.pestoHeader import HeaderReference, run_level0
 from drpm4.tools.configfile import load_config, log_dir
 
@@ -27,17 +29,24 @@ def _setup_logging(verbose: bool) -> None:
         format="%(asctime)s %(levelname)-7s %(message)s",
         handlers=handlers,
     )
+    if not verbose:  # the astrometry.net extension logs every quad it tries
+        for h in handlers:
+            h.addFilter(lambda r: not r.getMessage().startswith("solve "))
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="drpm4",
-        description="PESTO data reduction. Currently runs level 0 (header standardization).",
+        description="PESTO data reduction. Runs level 0 (headers), level 1 (astrometry), then builds the night report.",
     )
     p.add_argument("--dir", type=Path, default=Path.cwd(), metavar="PATH",
                    help="night folder or a single object folder (default: current directory)")
     p.add_argument("--list", action="store_true", help="list the objects, filters and rotations, then exit")
     p.add_argument("--skip-existing", action="store_true", help="do not rewrite files already in redux/")
+    p.add_argument("--level", type=int, choices=(0, 1), default=1,
+                   help="highest reduction level to run: 0 = headers, 1 = headers + astrometry (default)")
+    p.add_argument("--no-report", action="store_true", help="run level 0 only, no night report")
+    p.add_argument("--report-only", action="store_true", help="build the night report only, no level 0")
     p.add_argument("-v", "--verbose", action="store_true", help="debug output")
     p.add_argument("--version", action="version", version=f"drpm4 {__version__}")
     return p
@@ -56,21 +65,43 @@ def main(argv: list[str] | None = None) -> int:
     log.info("night folder: %s%s", night_dir, f" (only {only.name})" if only else "")
 
     if args.list:
-        objs = ommobjs.parse(night_dir, only=only, reference=reference)
-        print(f"{'object':<24}{'filter':<10}{'rotation':>9}{'files':>7}  increments")
-        for o in objs.objects:
-            print(f"{o.object:<24}{o.filter:<10}{o.rotation:>9.2f}{o.number_of_file:>7}  {o.start}-{o.stop}")
-        print(f"{objs.nb_objects} observation(s)")
+        objs = ommobjs(reference)
+        objs.parse(night_dir, only=only)
+        print(f"{'object':<24}{'filter':<10}{'rotation':>9}{'files':>7}{'flat':>6}{'dark':>6}  increments")
+        for o in objs:
+            print(f"{o.object:<24}{o.filter:<10}{o.rotation:>9.2f}{o.number_of_file:>7}{len(o.flat):>6}{len(o.dark):>6}  {o.start}-{o.stop}")
+        print(f"{objs.nb_objects} observation(s), {objs.observing_time:.2f} h of exposure")
         return 0
 
     config = load_config()
     failures = 0
-    for folder, datatype in level0_folders(night_dir, only):
+    for folder, datatype in [] if args.report_only else level0_folders(night_dir, only):
         res = run_level0(folder, datatype, reference, config, overwrite=not args.skip_existing)
         failures += len(res.failed)
         log.info("level 0 %-9s %-40s done=%d skipped=%d failed=%d",
                  datatype, folder.relative_to(night_dir) if not only else folder.name,
                  res.done, res.skipped, len(res.failed))
+    if args.level >= 1 and not args.report_only:
+        targets = [f for f, kind in level0_folders(night_dir, only) if kind == "SCIENCE"]
+        try:
+            solver = AstrometrySolver(config)
+        except (FileNotFoundError, ImportError) as exc:
+            log.error("level 1 not run: %s", exc)
+            failures += 1
+        else:
+            for folder in targets:
+                res = run_level1(folder, solver, config, overwrite=not args.skip_existing)
+                failures += len(res.failed)
+                log.info("level 1 %-40s solved=%d tracked=%d unsolved=%d skipped=%d failed=%d",
+                         folder.relative_to(night_dir) if not only else folder.name,
+                         res.solved, res.tracked, len(res.unsolved), res.skipped, len(res.failed))
+
+    if not args.no_report:
+        objs = ommobjs(reference, config)
+        objs.parse(night_dir, only=only)
+        report = NightReport(objs, config).build()
+        if report is None:
+            failures += 1
     return 1 if failures else 0
 
 

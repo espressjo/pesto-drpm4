@@ -4,7 +4,7 @@ Data reduction pipeline for PESTO (Observatoire du Mont Mégantic). Current scop
 
 ## Installation
 
-Requires Python >= 3.12.
+Requires Python >= 3.12, and `pdflatex` (TeX Live) for the PDF night report.
 
 ### 1. Runtime directories
 
@@ -27,20 +27,21 @@ To use another location: `DRPM4_HOME=/some/path ./install.sh`. The script is saf
 
 ### 2. Python package
 
-Use a virtual environment so the package does not touch the system Python:
+On Ubuntu 24.04 `pip` refuses to install into the system Python ("externally-managed-environment"), so always use a virtual environment (or conda). If `python3 -m venv` fails, run `sudo apt install python3-venv`. The PDF report needs LaTeX: `sudo apt install texlive-latex-base texlive-latex-recommended texlive-fonts-recommended`. `./install.sh` checks these and prints what is missing.
 
 ```bash
 python3 -m venv ~/.venvs/drpm4
 source ~/.venvs/drpm4/bin/activate
-pip install .            # regular install
+pip install --upgrade pip
+pip install .            # regular install, use this on the observatory machine
 # or, for development (edits take effect immediately):
 pip install -e .
 ```
 
-Dependencies (numpy, matplotlib, astropy) are installed automatically. Check the install with:
+Dependencies (numpy, matplotlib, astropy, scipy, photutils) are installed automatically. `pip install -e .` always prints a setuptools notice ("Editable installation ... be careful with folders in your working directory with the same name as your package"); it is informational. Run `pip install` from outside the repository folder if you want to avoid it. With a regular install, run `pip install .` again after each code change. Check the install with:
 
 ```bash
-python -c "import drpm4; print(drpm4.__version__)"
+drpm4 --version
 ```
 
 ## Usage
@@ -48,9 +49,14 @@ python -c "import drpm4; print(drpm4.__version__)"
 ```bash
 cd /path/to/260817        # night folder, or a Target/<object> folder
 drpm4 --list              # objects, filters, rotations, increments
-drpm4                     # level 0 on calibrations and targets, results in <folder>/redux/
+drpm4                     # level 0 (results in <folder>/redux/), level 1 (astrometry), then the night report in <night>/report/
+drpm4 --level 0           # level 0 only, no astrometry
+drpm4 --no-report         # level 0 only
+drpm4 --report-only       # report only (level 0 already done)
 drpm4 --dir /path/to/night --skip-existing -v
 ```
+
+Level 1 needs the astrometry.net index files in `/usr/local/astrometry/data` (the 52xx series is enough for PESTO's 7.8' field). To use another folder, set `index_dir` in the `[astrometry]` section of `/opt/drpm4/config/pesto.cfg`; the other `[astrometry]` settings have defaults and can be left out.
 
 Originals are never modified. Logs go to the console and `/opt/drpm4/log/drpm4-YYYYMMDD.log` (one file per day).
 
