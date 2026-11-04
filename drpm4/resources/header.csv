@@ -1,0 +1,105 @@
+key;type;origin;comments;synonyms;default_nuvu;default_andor;transform_nuvu;transform_andor
+SIMPLE;BOOL;structural;conforms to FITS standard;;;;;
+BITPIX;INT;structural;array data type;;;;;
+NAXIS;INT;structural;number of array dimensions;;;;;
+NAXIS1;INT;structural;length of data axis 1;;;;;
+NAXIS2;INT;structural;length of data axis 2;;;;;
+EXTEND;BOOL;structural;FITS dataset may contain extensions;;;;;
+BZERO;INT;structural;offset data range to that of unsigned short;;;;;
+BSCALE;INT;structural;default scaling factor;;;;;
+CTRLTIME;STR;raw;Readout completion time (UT);DATE-OBS;@DATE;@DATE;iso_time;iso_time
+CTRLTMFL;INT;raw;Timestamp status (0=internal, non-GPS);;0;-999;;
+HOSTTIME;FLOAT;raw;Ms since last host reboot;;-999.99;-999.99;;
+DATE;STR;raw;File creation time (UT);DATE-OBS;;;iso_time;iso_time
+SYNC_TOD;STR;raw;System time of parameter sync;;N/A;N/A;iso_time;iso_time
+RETD_TOD;STR;raw;System time of frame return;;N/A;N/A;iso_time;iso_time
+AMP_TYPE;INT;raw;The amplifier type;;-999;-999;map:Conventional>2,EM>1;
+V_FREQ;INT;raw;Vertical scan rate frequency (Hz);;-999;-999;;
+H_FREQ;INT;raw;Horizontal scan rate frequency (Hz);;-999;-999;;
+EFF_EXP;FLOAT;raw;Effective exposure time (ms);EXPOSURE;-999.99;-999.99;;scale:1000
+WAIT_TIM;FLOAT;raw;Waiting time (ms);;-999.99;-999.99;;
+ANA_GAIN;INT;raw;The analog gain;;-999;1;;
+ANA_OFF;INT;raw;The analog offset;;-999;-999;;
+SET_TEMP;FLOAT;raw;Requested CCD temperature (C);;-999.99;-999.99;;
+BIN_X;INT;raw;Pixels binned along X;BIN1;-999;-999;;
+BIN_Y;INT;raw;Pixels binned along Y;BIN2;-999;-999;;
+CRP_ENAB;INT;raw;Crop mode (0=off, 1=X only, 2=X and Y);;0;0;map:Crop Mode Disabled>0;
+OVS;INT;raw;Number of overscan data lines;;-999;0;;
+SHUTTER;INT;raw;Internal shutter mode;;-999;-999;map:Close>0;
+TRIGGER;INT;raw;The trigger mode;;-999;-999;map:Internal>0;
+FIRE_POL;INT;raw;Polarity of the Fire OUT signal;;-999;-999;map:Positive>1;
+SHUT_POL;INT;raw;Polarity of the Shutter OUT signal;;-999;-999;map:Positive>1;
+ARM_POL;INT;raw;Polarity of the Arm OUT signal;;-999;-999;map:Positive>1;
+OUT_WID;FLOAT;raw;Minimum width for external signals;;-999.99;-999.99;;
+SERIAL;STR;raw;Serial number of the acquiring device;;N/A;6268;;
+SOFT_VER;STR;raw;nc_driver version used for acquisition;;N/A;N/A;;
+FIRM_VER;STR;raw;Camera firmware version;;N/A;N/A;;
+HARD_VER;STR;raw;Camera hardware version;;N/A;N/A;;
+FPGA_VER;STR;raw;Camera FPGA version;;N/A;N/A;;
+ACQSOFT;STR;raw;Acquisition software version;;N/A;1.0.0-beta;;
+PROCTYPE;INT;raw;Processing applied to the image;;-999;-999;;
+CLAMP;INT;raw;Expected mean of black images after processing;BASELINE;-999;-999;;
+DET_TYPE;STR;raw;Detector model;CAMERA;N/A;N/A;map:2>CCD201-20;remove: Unknown libandor
+CAMMODEL;STR;constant;Camera model;;HNu1024;iXion;;
+CAMMFG;STR;constant;Camera manufacturer;;Nuvu;Andor;;
+ROI_NBR;INT;raw;Number of defined regions of interest;;-999;1;;
+ROI_X_1;INT;raw;ROI 1 start along X (CCD);ROI_X_01;-999;-999;;
+ROI_Y_1;INT;raw;ROI 1 start along Y (CCD);ROI_Y_01;-999;-999;;
+ROI_W_1;INT;raw;ROI 1 size along X (CCD);ROI_W_01;-999;1024;;
+ROI_H_1;INT;raw;ROI 1 size along Y (CCD);ROI_H_01;-999;1024;;
+ROUTX_1;INT;raw;ROI 1 output start along X;ROUTX_01;-999;-999;;
+ROUTY_1;INT;raw;ROI 1 output start along Y;ROUTY_01;-999;-999;;
+ROUTW_1;INT;raw;ROI 1 output size along X;ROUTW_01;-999;1024;;
+ROUTH_1;INT;raw;ROI 1 output size along Y;ROUTH_01;-999;1024;;
+ROVSX_1;INT;raw;ROI 1 overscan start along X;ROVSX_01;-999;-999;;
+ROVSY_1;INT;raw;ROI 1 overscan start along Y;ROVSY_01;-999;-999;;
+ROVSW_1;INT;raw;ROI 1 overscan size along X;ROVSW_01;-999;-999;;
+ROVSH_1;INT;raw;ROI 1 overscan size along Y;ROVSH_01;-999;-999;;
+ORIGIN;STR;constant;Laboratoire d'Astrophysique Experimentale;;LAE;LAE;;
+INSTRUME;STR;constant;Instrument name;;PESTO;PESTO;;
+TELESCOP;STR;constant;Observatoire du Mont-Megantic;;OMM-1.6m;OMM-1.6m;;
+OBJECT;STR;raw;Object name;;N/A;=from_filename;;
+PROGRAM;STR;raw;Program name;;unknown;unknown;;
+RA;FLOAT;raw;Right ascension (hours);;-999.99;-999.99;;
+HA;FLOAT;raw;Hour angle (hours);;-999.99;-999.99;;
+DEC;FLOAT;raw;Declination (degrees);;-999.99;-999.99;;
+EPOCH;FLOAT;raw;Epoch of the coordinates;;2000.0;2000.0;;
+AIRMASS;FLOAT;raw;Air mass;;-999.99;-999.99;;
+ST;FLOAT;raw;Sidereal time (hours);;-999.99;=sidereal_time;;
+UT;FLOAT;raw;Universal time (hours);;-999.99;=ut_hours;;
+YEAR;FLOAT;raw;Year;;-999.99;=year;;
+FOCUS;FLOAT;raw;Telescope focus;TFOCUS;-999.99;-999.99;;
+ROTATOR;FLOAT;raw;Instrument rotator angle (deg);IROTATOR;-999.99;-999.99;;
+DOME;FLOAT;raw;Dome angle (deg);;-999.99;-999.99;;
+PESTOROT;FLOAT;raw;FOV rotator angle (deg);;-999.99;-999.99;missing_if:999;missing_if:999
+PESTOMIR;FLOAT;raw;Pickup mirror position (deg);;-999.99;-999.99;missing_if:999;missing_if:999
+OBSERVER;STR;raw;Name of the observer;OBSERV;Unknown;Unknown;;
+OPERATOR;STR;raw;Name of the telescope operator;;Unknown;Unknown;;
+FILTER;STR;raw;Filter used;FILTRE;N/A;N/A;;
+BIAS;INT;raw;Bias status (0=out of date, 1=up to date);;-999;-999;;
+FWOVER;INT;raw;Filter wheel override (0=wheel, 1=manual);;-999;-999;;
+HUMIN;FLOAT;raw;Interior humidity (%);;-999.99;-999.99;;
+HUMOUT;FLOAT;raw;Exterior humidity (%);;-999.99;-999.99;;
+TEMPIN;FLOAT;raw;Interior temperature (C);;-999.99;-999.99;;
+TEMPOUT;FLOAT;raw;Exterior temperature (C);;-999.99;-999.99;;
+TEMPST;FLOAT;raw;Telescope structure temperature (C);;-999.99;-999.99;;
+TEMPM;FLOAT;raw;Mirror temperature (C);;-999.99;-999.99;;
+TCCD;FLOAT;raw;CCD temperature (C);TEMP_CCD|TMESDECT|T1;-999.99;-999.99;auto_kelvin;auto_kelvin
+TEXP;FLOAT;raw;Requested exposure time (ms);EXPOSURE;-999.99;-999.99;;scale:1000
+NIGHTID;INT;derived;YYMMDD of the local start of night;;;;;
+OBS_LAT;FLOAT;constant;Latitude of the observatory (deg);;45.455556;45.455556;;
+OBS_LON;FLOAT;constant;Longitude of the observatory (deg);;-71.152778;-71.152778;;
+RATXT;STR;derived;RA as text (hms);;;;;
+DECTXT;STR;derived;DEC as text (dms);;;;;
+RELEASE;STR;derived;End of proprietary period (YYYY-MM-DD);;;;;
+DATATYPE;STR;pipeline;SCIENCE/CALIB/REJECT/FOCUS/TEST;;;;;
+DRPCODE;STR;pipeline;Data reduction level;;;;;
+GPS;BOOL;derived;GPS timestamp was used;GPS-DATE;;;;to_bool
+KGAIN_01;FLOAT;raw;K-gain of chosen configuration (e-/ADU);;-999.99;-999.99;;
+TFPGA;FLOAT;raw;FPGA temperature (C);STSAGEMS;-999.99;-999.99;;
+TCTRL;FLOAT;raw;Controller temperature (C);TEMPCTRL;-999.99;-999.99;;
+TPSU;FLOAT;raw;PSU temperature (C);TEMPPOWR;-999.99;-999.99;;
+NOIFLOOR;FLOAT;raw;Noise floor;;-999.99;-999.99;;
+BIASFNB;INT;raw;Number of bias frames taken;NBR_FRMS;-999;-999;;
+IMG_SIZE;STR;raw;Image size (pixels);;=img_size;=img_size;;
+TEMPHTSK;FLOAT;raw;Heatsink temperature (C);;-999.99;-999.99;;

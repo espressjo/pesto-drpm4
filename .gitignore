@@ -1,0 +1,8 @@
+CLAUDE.md
+*.swp
+drpm4.egg-info/
+nuvu.raw.header.example.txt
+pyproject.toml
+spec.md
+standerdized.header.example.txt
+*.pyc
