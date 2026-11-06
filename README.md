@@ -100,9 +100,29 @@ drpm4 --archive-only             # archive without running anything else
 
 Originals are never modified by the reduction. Logs go to the console and `/opt/drpm4/log/drpm4-YYYYMMDD.log` (one file per day).
 
+
+## External Dependencies
+This project uses Git submodules to include external dependencies.
+
+To clone the repository along with all its submodules, use:
+
+```bash
+git clone --recurse-submodules https://github.com/username/my-project.git
+```
+If you have already cloned the repository without initializing the submodules, run:
+
+```bash
+git submodule update --init --recursive
+```
+This will download and initialize all required submodules.
+
 ## Tests
 
 ```bash
 pip install -e ".[test]"
 pytest                    # one test: pytest tests/test_level0.py::test_cli_single_object_folder_and_bad_file
 ```
+
+
+
+
